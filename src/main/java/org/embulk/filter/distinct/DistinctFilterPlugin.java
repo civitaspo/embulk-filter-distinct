@@ -52,8 +52,7 @@ public class DistinctFilterPlugin
                     "inputSchema does not have any columns you configured.");
         }
         else {
-            // TODO: debug
-            logger.info("distinct columns: {}", task.getDistinctColumns());
+            logger.debug("distinct columns: {}", task.getDistinctColumns());
         }
 
         Schema outputSchema = inputSchema;

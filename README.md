@@ -1,6 +1,6 @@
 # Distinct filter plugin for Embulk
 
-TODO: Write short description here and build.gradle file.
+filter return only distinct (different) records by columns you configured.
 
 ## Overview
 
@@ -8,19 +8,26 @@ TODO: Write short description here and build.gradle file.
 
 ## Configuration
 
-- **option1**: description (integer, required)
-- **option2**: description (string, default: `"myvalue"`)
-- **option3**: description (string, default: `null`)
+- **columns**: column name list to distinguish records (array of string, required)
 
 ## Example
 
 ```yaml
 filters:
   - type: distinct
-    option1: example1
-    option2: example2
+    columns: [c0, c1]
 ```
 
+## Run Example
+
+```
+$ ./gradlew classpath
+$ embulk run -I lib example/config.yml
+```
+
+## Note
+
+this plugin uses a lot of memory because of having distinct column values.
 
 ## Build
 
