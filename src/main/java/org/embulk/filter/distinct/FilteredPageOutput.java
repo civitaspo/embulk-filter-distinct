@@ -18,7 +18,7 @@ import java.util.Set;
 /**
  * Created by takahiro.nakayama on 12/6/15.
  */
-public class FilteredPageOutput
+class FilteredPageOutput
     implements PageOutput
 {
     private final static Logger logger = Exec.getLogger(FilteredPageOutput.class);

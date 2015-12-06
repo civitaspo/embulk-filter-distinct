@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 /**
  * Created by takahiro.nakayama on 12/6/15.
  */
-public class ColumnVisitorImpl
+class ColumnVisitorImpl
     implements ColumnVisitor
 {
     private final static Logger logger = Exec.getLogger(ColumnVisitorImpl.class);
