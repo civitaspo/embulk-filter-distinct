@@ -34,7 +34,7 @@ public class DistinctFilterPlugin
 
         // is used to concatenate multiple values for generating the key to distinguish records.
         @Config("delimiter")
-        @ConfigDefault("\"--\"")
+        @ConfigDefault("\"\\t\"")
         public String getDelimiter();
     }
 
