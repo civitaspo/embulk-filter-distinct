@@ -22,6 +22,6 @@ in:
       - {name: score, type: double}
 filters:
   - type: distinct
-    keys: [time]
+    columns: [time]
 out:
   type: stdout
