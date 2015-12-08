@@ -31,11 +31,6 @@ public class DistinctFilterPlugin
         @ConfigInject
         public void setDistinctColumns(List<Column> columns);
         public List<Column> getDistinctColumns();
-
-        // is used to concatenate multiple values for generating the key to distinguish records.
-        @Config("delimiter")
-        @ConfigDefault("\"\\t\"")
-        public String getDelimiter();
     }
 
     @Override

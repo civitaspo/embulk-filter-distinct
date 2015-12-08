@@ -1,5 +1,6 @@
 package org.embulk.filter.distinct;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ObjectArrays;
 import com.google.common.collect.Sets;
@@ -29,7 +30,6 @@ class FilteredPageOutput
     private final ColumnVisitorImpl visitor;
     private final Schema outputSchema;
     private final List<Column> distinctColumns;
-    private final String delimiter;
 
     private final static Set<List<Object>> filter = Sets.newConcurrentHashSet();
 
@@ -41,7 +41,6 @@ class FilteredPageOutput
         this.visitor = new ColumnVisitorImpl(pageReader, pageBuilder);
         this.outputSchema = outputSchema;
         this.distinctColumns = task.getDistinctColumns();
-        this.delimiter = task.getDelimiter();
     }
 
     @Override
@@ -70,41 +69,32 @@ class FilteredPageOutput
         pageBuilder.close();
     }
 
-//    private String getCurrentDistinctKey()
     private List<Object> getCurrentDistinctKey()
     {
         ImmutableList.Builder<Object> builder = ImmutableList.builder();
-//        StringBuilder sb = new StringBuilder();
         for (Column distinctColumn : distinctColumns) {
             if (!pageReader.isNull(distinctColumn)) {
                 if (Types.BOOLEAN.equals(distinctColumn.getType())) {
-//                    sb.append(pageReader.getBoolean(distinctColumn));
                     builder.add(pageReader.getBoolean(distinctColumn));
                 }
                 else if (Types.DOUBLE.equals(distinctColumn.getType())) {
-//                    sb.append(pageReader.getDouble(distinctColumn));
                     builder.add(pageReader.getDouble(distinctColumn));
                 }
                 else if (Types.LONG.equals(distinctColumn.getType())) {
-//                    sb.append(pageReader.getLong(distinctColumn));
                     builder.add(pageReader.getLong(distinctColumn));
                 }
                 else if (Types.STRING.equals(distinctColumn.getType())) {
-//                    sb.append(pageReader.getString(distinctColumn));
                     builder.add(pageReader.getString(distinctColumn));
                 }
                 else if (Types.TIMESTAMP.equals(distinctColumn.getType())) {
-//                    sb.append(pageReader.getTimestamp(distinctColumn));
                     builder.add(pageReader.getTimestamp(distinctColumn));
                 }
                 else {
                     throw new RuntimeException("unsupported type: " + distinctColumn.getType());
                 }
             }
-//            sb.append(delimiter);
         }
 
-//        return sb.toString();
         return builder.build();
     }
 }
