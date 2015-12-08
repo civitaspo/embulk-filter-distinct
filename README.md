@@ -1,6 +1,6 @@
 # Distinct filter plugin for Embulk
 
-filter return only distinct (different) records by columns you configured.
+filter returns distinct records by columns you configured.
 
 ## Overview
 
