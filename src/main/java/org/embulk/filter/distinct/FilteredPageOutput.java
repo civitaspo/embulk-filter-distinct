@@ -1,5 +1,7 @@
 package org.embulk.filter.distinct;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ObjectArrays;
 import com.google.common.collect.Sets;
 import org.embulk.filter.distinct.DistinctFilterPlugin.PluginTask;
 import org.embulk.spi.Column;
@@ -29,7 +31,7 @@ class FilteredPageOutput
     private final List<Column> distinctColumns;
     private final String delimiter;
 
-    private final static Set<String> filter = Sets.newConcurrentHashSet();
+    private final static Set<List<Object>> filter = Sets.newConcurrentHashSet();
 
     FilteredPageOutput(PluginTask task, Schema inputSchema,
                        Schema outputSchema, PageOutput pageOutput)
@@ -68,33 +70,41 @@ class FilteredPageOutput
         pageBuilder.close();
     }
 
-    private String getCurrentDistinctKey()
+//    private String getCurrentDistinctKey()
+    private List<Object> getCurrentDistinctKey()
     {
-        StringBuilder sb = new StringBuilder();
+        ImmutableList.Builder<Object> builder = ImmutableList.builder();
+//        StringBuilder sb = new StringBuilder();
         for (Column distinctColumn : distinctColumns) {
             if (!pageReader.isNull(distinctColumn)) {
                 if (Types.BOOLEAN.equals(distinctColumn.getType())) {
-                    sb.append(pageReader.getBoolean(distinctColumn));
+//                    sb.append(pageReader.getBoolean(distinctColumn));
+                    builder.add(pageReader.getBoolean(distinctColumn));
                 }
                 else if (Types.DOUBLE.equals(distinctColumn.getType())) {
-                    sb.append(pageReader.getDouble(distinctColumn));
+//                    sb.append(pageReader.getDouble(distinctColumn));
+                    builder.add(pageReader.getDouble(distinctColumn));
                 }
                 else if (Types.LONG.equals(distinctColumn.getType())) {
-                    sb.append(pageReader.getLong(distinctColumn));
+//                    sb.append(pageReader.getLong(distinctColumn));
+                    builder.add(pageReader.getLong(distinctColumn));
                 }
                 else if (Types.STRING.equals(distinctColumn.getType())) {
-                    sb.append(pageReader.getString(distinctColumn));
+//                    sb.append(pageReader.getString(distinctColumn));
+                    builder.add(pageReader.getString(distinctColumn));
                 }
                 else if (Types.TIMESTAMP.equals(distinctColumn.getType())) {
-                    sb.append(pageReader.getTimestamp(distinctColumn));
+//                    sb.append(pageReader.getTimestamp(distinctColumn));
+                    builder.add(pageReader.getTimestamp(distinctColumn));
                 }
                 else {
                     throw new RuntimeException("unsupported type: " + distinctColumn.getType());
                 }
             }
-            sb.append(delimiter);
+//            sb.append(delimiter);
         }
 
-        return sb.toString();
+//        return sb.toString();
+        return builder.build();
     }
 }
