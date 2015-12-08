@@ -33,6 +33,7 @@ this plugin uses a lot of memory because of having distinct column values.
 
 - lessen further the amount of memory by filter. i.e. use crc32 of values as distinct key?
   - want ideas!
+- test
 
 ## Build
 
