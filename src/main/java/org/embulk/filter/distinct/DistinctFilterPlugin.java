@@ -1,36 +1,36 @@
 package org.embulk.filter.distinct;
 
-import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 import org.embulk.config.Config;
 import org.embulk.config.ConfigDefault;
-import org.embulk.config.ConfigDiff;
+import org.embulk.config.ConfigException;
+import org.embulk.config.ConfigInject;
 import org.embulk.config.ConfigSource;
 import org.embulk.config.Task;
 import org.embulk.config.TaskSource;
 import org.embulk.spi.Column;
+import org.embulk.spi.Exec;
 import org.embulk.spi.FilterPlugin;
 import org.embulk.spi.PageOutput;
 import org.embulk.spi.Schema;
+import org.slf4j.Logger;
+
+import java.util.List;
 
 public class DistinctFilterPlugin
         implements FilterPlugin
 {
+    private final static Logger logger = Exec.getLogger(DistinctFilterPlugin.class);
+
     public interface PluginTask
             extends Task
     {
-        // configuration option 1 (required integer)
-        @Config("option1")
-        public int getOption1();
+        @Config("columns")
+        public List<String> getDistinctColumnNames();
 
-        // configuration option 2 (optional string, null is not allowed)
-        @Config("option2")
-        @ConfigDefault("\"myvalue\"")
-        public String getOption2();
-
-        // configuration option 3 (optional string, null is allowed)
-        @Config("option3")
-        @ConfigDefault("null")
-        public Optional<String> getOption3();
+        @ConfigInject
+        public void setDistinctColumns(List<Column> columns);
+        public List<Column> getDistinctColumns();
     }
 
     @Override
@@ -39,18 +39,41 @@ public class DistinctFilterPlugin
     {
         PluginTask task = config.loadConfig(PluginTask.class);
 
-        Schema outputSchema = inputSchema;
+        List<Column> distinctColumns = convertNameToColumn(inputSchema, task.getDistinctColumnNames());
+        task.setDistinctColumns(distinctColumns);
 
+        if (task.getDistinctColumns().isEmpty()) {
+            throw new ConfigException(
+                    "inputSchema does not have any columns you configured.");
+        }
+        else {
+            logger.debug("distinct columns: {}", task.getDistinctColumns());
+        }
+
+        Schema outputSchema = inputSchema;
         control.run(task.dump(), outputSchema);
     }
 
     @Override
-    public PageOutput open(TaskSource taskSource, Schema inputSchema,
-            Schema outputSchema, PageOutput output)
+    public PageOutput open(TaskSource taskSource, final Schema inputSchema,
+                           final Schema outputSchema, final PageOutput output)
     {
-        PluginTask task = taskSource.loadTask(PluginTask.class);
+        final PluginTask task = taskSource.loadTask(PluginTask.class);
+        return new FilteredPageOutput(task, inputSchema,
+                                      outputSchema, output);
+    }
 
-        // Write your code here :)
-        throw new UnsupportedOperationException("DistinctFilterPlugin.open method is not implemented yet");
+    private List<Column> convertNameToColumn(Schema inputSchema, List<String> columnNames)
+    {
+        ImmutableList.Builder<Column> builder = ImmutableList.builder();
+        for (String columnName : columnNames) {
+            for (Column column : inputSchema.getColumns()) {
+                if (columnName.contentEquals(column.getName())) {
+                    builder.add(column);
+                }
+            }
+        }
+
+        return builder.build();
     }
 }
