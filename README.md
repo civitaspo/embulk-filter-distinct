@@ -29,6 +29,11 @@ $ embulk run -I lib example/config.yml
 
 this plugin uses a lot of memory because of having distinct column values.
 
+## TODO
+
+- lessen further the amount of memory by filter. i.e. use crc32 of values as distinct key?
+  - want ideas!
+
 ## Build
 
 ```
