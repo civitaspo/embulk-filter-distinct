@@ -50,7 +50,7 @@ class FilteredPageOutput
         pageReader.setPage(page);
 
         while (pageReader.nextRecord()) {
-            if (filter.add(getCurrentDistinctKey())) {
+            if (isDistinct(getCurrentValues())) {
                 outputSchema.visitColumns(visitor);
                 pageBuilder.addRecord();
             }
@@ -70,7 +70,7 @@ class FilteredPageOutput
         pageBuilder.close();
     }
 
-    private List<Object> getCurrentDistinctKey()
+    private List<Object> getCurrentValues()
     {
         ImmutableList.Builder<Object> builder = ImmutableList.builder();
         for (Column distinctColumn : distinctColumns) {
@@ -98,5 +98,15 @@ class FilteredPageOutput
         }
 
         return builder.build();
+    }
+
+    private boolean isDistinct(List<Object> key) {
+        if (filter.add(key)) {
+            return true;
+        }
+        else {
+            logger.debug("Duplicated key: {}", key);
+            return false;
+        }
     }
 }
