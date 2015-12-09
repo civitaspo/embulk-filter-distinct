@@ -1,5 +1,6 @@
 package org.embulk.filter.distinct;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ObjectArrays;
@@ -49,7 +50,7 @@ class FilteredPageOutput
         pageReader.setPage(page);
 
         while (pageReader.nextRecord()) {
-            if (filter.add(getCurrentDistinctKey())) {
+            if (isDistinct(getCurrentValues())) {
                 outputSchema.visitColumns(visitor);
                 pageBuilder.addRecord();
             }
@@ -69,32 +70,43 @@ class FilteredPageOutput
         pageBuilder.close();
     }
 
-    private List<Object> getCurrentDistinctKey()
+    private List<Object> getCurrentValues()
     {
         ImmutableList.Builder<Object> builder = ImmutableList.builder();
         for (Column distinctColumn : distinctColumns) {
-            if (!pageReader.isNull(distinctColumn)) {
-                if (Types.BOOLEAN.equals(distinctColumn.getType())) {
-                    builder.add(pageReader.getBoolean(distinctColumn));
-                }
-                else if (Types.DOUBLE.equals(distinctColumn.getType())) {
-                    builder.add(pageReader.getDouble(distinctColumn));
-                }
-                else if (Types.LONG.equals(distinctColumn.getType())) {
-                    builder.add(pageReader.getLong(distinctColumn));
-                }
-                else if (Types.STRING.equals(distinctColumn.getType())) {
-                    builder.add(pageReader.getString(distinctColumn));
-                }
-                else if (Types.TIMESTAMP.equals(distinctColumn.getType())) {
-                    builder.add(pageReader.getTimestamp(distinctColumn));
-                }
-                else {
-                    throw new RuntimeException("unsupported type: " + distinctColumn.getType());
-                }
+            if (pageReader.isNull(distinctColumn)) {
+                builder.add(Optional.absent());
+            }
+            else if (Types.BOOLEAN.equals(distinctColumn.getType())) {
+                builder.add(pageReader.getBoolean(distinctColumn));
+            }
+            else if (Types.DOUBLE.equals(distinctColumn.getType())) {
+                builder.add(pageReader.getDouble(distinctColumn));
+            }
+            else if (Types.LONG.equals(distinctColumn.getType())) {
+                builder.add(pageReader.getLong(distinctColumn));
+            }
+            else if (Types.STRING.equals(distinctColumn.getType())) {
+                builder.add(pageReader.getString(distinctColumn));
+            }
+            else if (Types.TIMESTAMP.equals(distinctColumn.getType())) {
+                builder.add(pageReader.getTimestamp(distinctColumn));
+            }
+            else {
+                throw new RuntimeException("unsupported type: " + distinctColumn.getType());
             }
         }
 
         return builder.build();
+    }
+
+    private boolean isDistinct(List<Object> key) {
+        if (filter.add(key)) {
+            return true;
+        }
+        else {
+            logger.debug("Duplicated key: {}", key);
+            return false;
+        }
     }
 }
