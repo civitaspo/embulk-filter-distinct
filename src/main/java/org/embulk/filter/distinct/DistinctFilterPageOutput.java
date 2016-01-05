@@ -1,9 +1,7 @@
 package org.embulk.filter.distinct;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ObjectArrays;
 import com.google.common.collect.Sets;
 import org.embulk.filter.distinct.DistinctFilterPlugin.PluginTask;
 import org.embulk.spi.Column;
@@ -22,20 +20,20 @@ import java.util.Set;
 /**
  * Created by takahiro.nakayama on 12/6/15.
  */
-class FilteredPageOutput
+class DistinctFilterPageOutput
     implements PageOutput
 {
-    private final static Logger logger = Exec.getLogger(FilteredPageOutput.class);
+    private final static Logger logger = Exec.getLogger(DistinctFilterPageOutput.class);
     private final PageReader pageReader;
     private final PageBuilder pageBuilder;
     private final ColumnVisitorImpl visitor;
     private final Schema outputSchema;
     private final List<Column> distinctColumns;
 
-    private final static Set<List<Object>> filter = Sets.newConcurrentHashSet();
+    private final static Set<List<Object>> set = Sets.newConcurrentHashSet();
 
-    FilteredPageOutput(PluginTask task, Schema inputSchema,
-                       Schema outputSchema, PageOutput pageOutput)
+    DistinctFilterPageOutput(PluginTask task, Schema inputSchema,
+                             Schema outputSchema, PageOutput pageOutput)
     {
         this.pageReader = new PageReader(inputSchema);
         this.pageBuilder = new PageBuilder(Exec.getBufferAllocator(), outputSchema, pageOutput);
@@ -100,12 +98,12 @@ class FilteredPageOutput
         return builder.build();
     }
 
-    private boolean isDistinct(List<Object> key) {
-        if (filter.add(key)) {
+    private boolean isDistinct(List<Object> values) {
+        if (set.add(values)) {
             return true;
         }
         else {
-            logger.debug("Duplicated key: {}", key);
+            logger.debug("Duplicated values: {}", values);
             return false;
         }
     }
