@@ -1,3 +1,10 @@
+0.0.3 (2016-01-05)
+==================
+
+- Cosmetic Change: Rename class name
+- Cosmetic Change: Rename variables
+- Cosmetic Change: Change indents
+
 0.0.2 (2015-12-09)
 ==================
 
