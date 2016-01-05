@@ -2,7 +2,6 @@ package org.embulk.filter.distinct;
 
 import com.google.common.collect.ImmutableList;
 import org.embulk.config.Config;
-import org.embulk.config.ConfigDefault;
 import org.embulk.config.ConfigException;
 import org.embulk.config.ConfigInject;
 import org.embulk.config.ConfigSource;
@@ -35,7 +34,7 @@ public class DistinctFilterPlugin
 
     @Override
     public void transaction(ConfigSource config, Schema inputSchema,
-            FilterPlugin.Control control)
+                            FilterPlugin.Control control)
     {
         PluginTask task = config.loadConfig(PluginTask.class);
 
@@ -59,8 +58,8 @@ public class DistinctFilterPlugin
                            final Schema outputSchema, final PageOutput output)
     {
         final PluginTask task = taskSource.loadTask(PluginTask.class);
-        return new FilteredPageOutput(task, inputSchema,
-                                      outputSchema, output);
+        return new DistinctFilterPageOutput(task, inputSchema,
+                                            outputSchema, output);
     }
 
     private List<Column> convertNameToColumn(Schema inputSchema, List<String> columnNames)
