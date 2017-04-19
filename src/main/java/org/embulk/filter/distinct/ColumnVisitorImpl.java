@@ -7,9 +7,6 @@ import org.embulk.spi.PageBuilder;
 import org.embulk.spi.PageReader;
 import org.slf4j.Logger;
 
-/**
- * Created by takahiro.nakayama on 12/6/15.
- */
 class ColumnVisitorImpl
     implements ColumnVisitor
 {
@@ -55,6 +52,17 @@ class ColumnVisitorImpl
             pageBuilder.setNull(outputColumn);
         } else {
             pageBuilder.setString(outputColumn, pageReader.getString(outputColumn));
+        }
+    }
+
+    @Override
+    public void jsonColumn(Column outputColumn)
+    {
+        if (pageReader.isNull(outputColumn)) {
+            pageBuilder.setNull(outputColumn);
+        }
+        else {
+            pageBuilder.setJson(outputColumn, pageReader.getJson(outputColumn));
         }
     }
 
