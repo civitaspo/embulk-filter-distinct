@@ -1,3 +1,12 @@
+0.1.0 (yyyy-mm-dd)
+==================
+
+- Migrate to Embulk v0.8.18
+  - https://github.com/civitaspo/embulk-filter-distinct/pull/4
+  - https://github.com/civitaspo/embulk-filter-distinct/pull/5
+- Add tests
+  - https://github.com/civitaspo/embulk-filter-distinct/pull/8
+
 0.0.3 (2016-01-05)
 ==================
 
