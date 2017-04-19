@@ -87,6 +87,9 @@ class DistinctFilterPageOutput
             else if (Types.TIMESTAMP.equals(distinctColumn.getType())) {
                 builder.add(pageReader.getTimestamp(distinctColumn));
             }
+            else if (Types.JSON.equals(distinctColumn.getType())) {
+                builder.add(pageReader.getJson(distinctColumn));
+            }
             else {
                 throw new RuntimeException("unsupported type: " + distinctColumn.getType());
             }
