@@ -7,9 +7,6 @@ import org.embulk.spi.PageBuilder;
 import org.embulk.spi.PageReader;
 import org.slf4j.Logger;
 
-/**
- * Created by takahiro.nakayama on 12/6/15.
- */
 class ColumnVisitorImpl
     implements ColumnVisitor
 {
