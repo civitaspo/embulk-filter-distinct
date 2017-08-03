@@ -17,9 +17,6 @@ import org.slf4j.Logger;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by takahiro.nakayama on 12/6/15.
- */
 class DistinctFilterPageOutput
     implements PageOutput
 {
@@ -89,6 +86,9 @@ class DistinctFilterPageOutput
             }
             else if (Types.TIMESTAMP.equals(distinctColumn.getType())) {
                 builder.add(pageReader.getTimestamp(distinctColumn));
+            }
+            else if (Types.JSON.equals(distinctColumn.getType())) {
+                builder.add(pageReader.getJson(distinctColumn));
             }
             else {
                 throw new RuntimeException("unsupported type: " + distinctColumn.getType());
